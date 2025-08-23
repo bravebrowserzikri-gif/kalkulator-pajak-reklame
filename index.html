@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Pajak Reklame</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+        
+        .form-container {
+            padding: 40px;
+        }
+        
+        .form-section {
+            margin-bottom: 35px;
+            background: #f8f9ff;
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 5px solid #4facfe;
+        }
+        
+        .form-section h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+        }
+        
+        .form-section h3::before {
+            content: "📊";
+            margin-right: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+        
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .calculate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 30px auto;
+            min-width: 200px;
+            pointer-events: auto;
+            z-index: 10;
+            position: relative;
+        }
+        
+        .calculate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        }
+        
+        .calculate-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .results {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            padding: 30px;
+            border-radius: 12px;
+            margin-top: 30px;
+            display: none;
+        }
+        
+        .results h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            text-align: center;
+        }
+        
+        .result-item {
+            background: white;
+            padding: 15px 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .result-item.final {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .result-label {
+            font-weight: 600;
+        }
+        
+        .result-value {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .row {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏢 Kalkulator Pajak Reklame</h1>
+            <p>Badan Pendapatan Daerah (BAPENDA) Kabupaten Kampar</p>
+            <p style="font-size: 0.95em; margin-top: 8px; opacity: 0.9;">Hitung NJOPR, NSR, dan Pajak Reklame sesuai Peraturan Daerah Kabupaten Kampar</p>
+        </div>
+        
+        <div class="form-container">
+            <form id="reklameForm">
+                <div class="form-section">
+                    <h3>Data Reklame</h3>
+                    <div class="form-group">
+                        <label for="jenisReklame">Jenis Reklame:</label>
+                        <select id="jenisReklame" required>
+                            <option value="">Pilih Jenis Reklame</option>
+                            <option value="megatron">Megatron</option>
+                            <option value="billboard_tiang_penerangan">Billboard Tiang + Penerangan</option>
+                            <option value="billboard_tiang_tanpa_penerangan">Billboard Tiang Tanpa Penerangan</option>
+                            <option value="billboard_menempel_penerangan">Billboard Menempel + Penerangan</option>
+                            <option value="billboard_menempel_tanpa_penerangan">Billboard Menempel Tanpa Penerangan</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="panjang">Panjang Reklame (meter):</label>
+                            <input type="number" id="panjang" step="0.01" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lebar">Lebar Reklame (meter):</label>
+                            <input type="number" id="lebar" step="0.01" min="0" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="luasPandang">Luas Pandang (m²) - Otomatis:</label>
+                        <input type="number" id="luasPandang" step="0.01" min="0" readonly style="background-color: #f0f0f0;">
+                    </div>
+                    <div class="form-group">
+                        <label for="tinggiReklame">Tinggi Reklame (meter):</label>
+                        <input type="number" id="tinggiReklame" step="0.1" min="0" required>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h3>Nilai Strategis</h3>
+                    <div class="row">
+                        <div class="form-group">
+                            <label for="kelasLokasi">Kelas Lokasi:</label>
+                            <select id="kelasLokasi" required>
+                                <option value="">Pilih Kelas</option>
+                                <option value="1">Kelas 1</option>
+                                <option value="2">Kelas 2</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="sudutPandang">Sudut Pandang:</label>
+                            <select id="sudutPandang" required>
+                                <option value="">Pilih Sudut</option>
+                                <option value=">4">Lebih dari 4 Arah</option>
+                                <option value="4">4 Arah</option>
+                                <option value="3">3 Arah</option>
+                                <option value="2">2 Arah</option>
+                                <option value="1">1 Arah</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="button" class="calculate-btn" onclick="calculatePajak()">💰 Hitung Pajak Reklame</button>
+            </form>
+            
+            <div id="results" class="results">
+                <h3>📋 Hasil Perhitungan</h3>
+                <div id="resultDetails"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const reklameRates = {
+            megatron: {
+                "1": 1500000,
+                "1.01-5": 2500000,
+                "5.01-25": 3000000,
+                ">25": 3500000,
+                tinggi: 200000
+            },
+            billboard_tiang_penerangan: {
+                "1": 312500,
+                "1.01-5": 625000,
+                "5.01-25": 937500,
+                ">25": 1250000,
+                tinggi: 100000
+            },
+            billboard_tiang_tanpa_penerangan: {
+                "1": 187500,
+                "1.01-5": 437500,
+                "5.01-25": 750000,
+                ">25": 1000000,
+                tinggi: 100000
+            },
+            billboard_menempel_penerangan: {
+                "1": 125000,
+                "1.01-5": 250000,
+                "5.01-25": 625000,
+                ">25": 875000,
+                tinggi: 100000
+            },
+            billboard_menempel_tanpa_penerangan: {
+                "1": 62500,
+                "1.01-5": 125000,
+                "5.01-25": 375000,
+                ">25": 625000,
+                tinggi: 100000
+            }
+        };
+
+        function getLuasRate(jenis, luas) {
+            const rates = reklameRates[jenis];
+            if (luas <= 1) return rates["1"];
+            if (luas <= 5) return rates["1.01-5"];
+            if (luas <= 25) return rates["5.01-25"];
+            return rates[">25"];
+        }
+
+        function getStrategicValue(luas) {
+            if (luas > 40) return 3125000;
+            if (luas > 20) return 1562500;
+            if (luas > 10) return 625000;
+            if (luas > 3) return 312500;
+            if (luas > 1) return 125500;
+            return 62500;
+        }
+
+        function getSudutPandangScore(sudut) {
+            const scores = {
+                ">4": 10,
+                "4": 8,
+                "3": 6,
+                "2": 4,
+                "1": 2
+            };
+            return scores[sudut] || 0;
+        }
+
+        function getKetinggianScore(tinggi) {
+            if (tinggi > 15) return 10;
+            if (tinggi >= 10) return 8;
+            if (tinggi >= 6) return 6;
+            if (tinggi >= 3) return 4;
+            return 2;
+        }
+
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0
+            }).format(number);
+        }
+
+        function getJenisReklameText(jenis) {
+            const jenisTexts = {
+                megatron: "Megatron/Videotron",
+                billboard_tiang_penerangan: "Billboard Tiang dengan Penerangan",
+                billboard_tiang_tanpa_penerangan: "Billboard Tiang tanpa Penerangan", 
+                billboard_menempel_penerangan: "Billboard Menempel dengan Penerangan",
+                billboard_menempel_tanpa_penerangan: "Billboard Menempel tanpa Penerangan"
+            };
+            return jenisTexts[jenis] || jenis;
+        }
+
+        function getKetinggianCategory(tinggi) {
+            if (tinggi > 15) return "> 15m";
+            if (tinggi >= 10) return "10m - 14,99m";
+            if (tinggi >= 6) return "6m - 9,99m";
+            if (tinggi >= 3) return "3m - 5,99m";
+            return "0m - 2,99m";
+        }
+
+        function getLuasCategory(luas) {
+            if (luas > 40) return "> 40 m²";
+            if (luas > 20) return "20,01 - 40 m²";
+            if (luas > 10) return "10,01 - 20 m²";
+            if (luas > 3) return "3,01 - 10 m²";
+            if (luas > 1) return "1,01 - 3 m²";
+            return "< 1 m²";
+        }
+
+        function calculatePajak() {
+            const jenisReklame = document.getElementById('jenisReklame').value;
+            const luasPandang = parseFloat(document.getElementById('luasPandang').value);
+            const tinggiReklame = parseFloat(document.getElementById('tinggiReklame').value);
+            const kelasLokasi = document.getElementById('kelasLokasi').value;
+            const sudutPandang = document.getElementById('sudutPandang').value;
+            
+            // Validasi input
+            if (!jenisReklame) {
+                alert('Pilih jenis reklame terlebih dahulu!');
+                return;
+            }
+            
+            if (!luasPandang || luasPandang <= 0) {
+                alert('Masukkan panjang dan lebar reklame!');
+                return;
+            }
+            
+            if (!tinggiReklame || tinggiReklame <= 0) {
+                alert('Masukkan tinggi reklame!');
+                return;
+            }
+            
+            if (!kelasLokasi) {
+                alert('Pilih kelas lokasi!');
+                return;
+            }
+            
+            if (!sudutPandang) {
+                alert('Pilih sudut pandang!');
+                return;
+            }
+            
+            try {
+                // Hitung NJOPR
+                const luasRate = getLuasRate(jenisReklame, luasPandang);
+                const tinggiRate = reklameRates[jenisReklame].tinggi;
+                const njoprLuas = luasPandang * luasRate;
+                const njoprTinggi = tinggiReklame * tinggiRate;
+                const totalNJOPR = njoprLuas + njoprTinggi;
+                
+                // Hitung NSR
+                const lokasiScore = kelasLokasi === "1" ? 10 : 7;
+                const sudutScore = getSudutPandangScore(sudutPandang);
+                const tinggiScore = getKetinggianScore(tinggiReklame);
+                
+                const bobotLokasi = (lokasiScore * 50) / 100;
+                const bobotSudut = (sudutScore * 25) / 100;
+                const bobotTinggi = (tinggiScore * 25) / 100;
+                const totalBobot = bobotLokasi + bobotSudut + bobotTinggi;
+                
+                const strategicValue = getStrategicValue(luasPandang);
+                const nslr = totalBobot * strategicValue;
+                
+                // Total NSR
+                const totalNSR = totalNJOPR + nslr;
+                
+                // Pajak Reklame (25%)
+                const pajakReklame = totalNSR * 0.25;
+                
+                // Tampilkan hasil
+                const resultsDiv = document.getElementById('results');
+                const resultDetails = document.getElementById('resultDetails');
+                
+                resultDetails.innerHTML = `
+                    <div style="background: #e8f4fd; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #2196f3;">
+                        <h4 style="color: #1976d2; margin-bottom: 15px; display: flex; align-items: center;">
+                            📋 <span style="margin-left: 8px;">Detail Perhitungan NJOPR</span>
+                        </h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                            <div><strong>Jenis Reklame:</strong><br>${getJenisReklameText(jenisReklame)}</div>
+                            <div><strong>Dimensi:</strong><br>${document.getElementById('panjang').value} m × ${document.getElementById('lebar').value} m = ${luasPandang} m²</div>
+                            <div><strong>Tinggi Reklame:</strong><br>${tinggiReklame} meter</div>
+                            <div><strong>Tarif per m²:</strong><br>${formatRupiah(luasRate)}</div>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; font-family: monospace;">
+                            <div>• Luas Pandang: ${luasPandang} m² × ${formatRupiah(luasRate)} = <strong>${formatRupiah(njoprLuas)}</strong></div>
+                            <div>• Ketinggian: ${tinggiReklame} m × ${formatRupiah(tinggiRate)} = <strong>${formatRupiah(njoprTinggi)}</strong></div>
+                            <div style="border-top: 1px solid #ddd; margin-top: 10px; padding-top: 10px; color: #1976d2; font-weight: bold;">
+                                Total NJOPR = ${formatRupiah(totalNJOPR)}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: #fff3e0; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 4px solid #ff9800;">
+                        <h4 style="color: #f57c00; margin-bottom: 15px; display: flex; align-items: center;">
+                            ⭐ <span style="margin-left: 8px;">Detail Perhitungan Nilai Strategis</span>
+                        </h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                            <div><strong>Lokasi:</strong><br>Kelas ${kelasLokasi} (Skor: ${lokasiScore})</div>
+                            <div><strong>Sudut Pandang:</strong><br>${sudutPandang} Arah (Skor: ${sudutScore})</div>
+                            <div><strong>Ketinggian:</strong><br>${getKetinggianCategory(tinggiReklame)} (Skor: ${tinggiScore})</div>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; font-family: monospace;">
+                            <div>• Bobot Lokasi: ${lokasiScore} × 50% = <strong>${bobotLokasi.toFixed(1)}</strong></div>
+                            <div>• Bobot Sudut Pandang: ${sudutScore} × 25% = <strong>${bobotSudut.toFixed(1)}</strong></div>
+                            <div>• Bobot Ketinggian: ${tinggiScore} × 25% = <strong>${bobotTinggi.toFixed(1)}</strong></div>
+                            <div style="border-top: 1px solid #ddd; margin-top: 8px; padding-top: 8px;">
+                                Total Bobot = <strong>${totalBobot.toFixed(1)}</strong>
+                            </div>
+                            <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid #ddd;">
+                                Nilai Satuan Strategis (${getLuasCategory(luasPandang)}): <strong>${formatRupiah(strategicValue)}</strong>
+                            </div>
+                            <div style="border-top: 1px solid #ddd; margin-top: 10px; padding-top: 10px; color: #f57c00; font-weight: bold;">
+                                NSLR = ${totalBobot.toFixed(1)} × ${formatRupiah(strategicValue)} = ${formatRupiah(nslr)}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="result-item" style="background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%); border-left: 4px solid #673ab7;">
+                        <span class="result-label">💎 <strong>NILAI SEWA REKLAME (NSR)</strong></span>
+                        <span class="result-value" style="font-size: 1.1em;">${formatRupiah(totalNSR)}</span>
+                    </div>
+                    
+                    <div style="background: white; padding: 15px; border-radius: 8px; margin: 10px 0; font-family: monospace; border: 2px dashed #673ab7;">
+                        <div style="text-align: center; color: #673ab7; font-weight: bold; margin-bottom: 10px;">RUMUS NSR</div>
+                        <div>NSR = NJOPR + NSLR</div>
+                        <div>NSR = ${formatRupiah(totalNJOPR)} + ${formatRupiah(nslr)}</div>
+                        <div style="font-weight: bold; color: #673ab7;">NSR = ${formatRupiah(totalNSR)}</div>
+                    </div>
+
+                    <div class="result-item final" style="background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%); transform: scale(1.02); margin-top: 20px;">
+                        <span class="result-label">🏛️ <strong>PAJAK REKLAME PER TAHUN</strong><br><small style="opacity: 0.9;">(25% × NSR)</small></span>
+                        <span class="result-value" style="font-size: 1.3em;">${formatRupiah(pajakReklame)}</span>
+                    </div>
+
+                    <div style="background: #f5f5f5; padding: 20px; border-radius: 10px; margin-top: 20px; text-align: center; border-top: 3px solid #4caf50;">
+                        <h4 style="color: #2e7d32; margin-bottom: 15px;">📍 Informasi Pembayaran</h4>
+                        <div style="margin-top: 15px; padding: 15px; background: #e8f5e8; border-radius: 8px; border-left: 4px solid #4caf50;">
+                            <strong>🏢 BAPENDA Kabupaten Kampar</strong><br>
+                            <small>Pajak ini harus dibayarkan sesuai dengan Peraturan Daerah Kabupaten Kampar.<br>
+                            Silakan hubungi BAPENDA Kampar untuk informasi lebih lanjut mengenai tata cara pembayaran.</small>
+                        </div>
+                    </div>
+                `;
+                
+                resultsDiv.style.display = 'block';
+                resultsDiv.scrollIntoView({ behavior: 'smooth' });
+                
+            } catch (error) {
+                alert('Terjadi kesalahan dalam perhitungan. Silakan periksa kembali data yang dimasukkan.');
+                console.error('Calculation error:', error);
+            }
+        }
+
+        document.getElementById('reklameForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            calculatePajak();
+        });
+        
+        // Auto calculate luas pandang when panjang or lebar changes
+        function updateLuasPandang() {
+            const panjang = parseFloat(document.getElementById('panjang').value) || 0;
+            const lebar = parseFloat(document.getElementById('lebar').value) || 0;
+            const luasPandang = panjang * lebar;
+            document.getElementById('luasPandang').value = luasPandang.toFixed(2);
+        }
+        
+        document.getElementById('panjang').addEventListener('input', updateLuasPandang);
+        document.getElementById('lebar').addEventListener('input', updateLuasPandang);
+    </script>
+</body>
+</html>
