@@ -811,12 +811,16 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+
+    // ALERT ISENG 😈
+    alert("Situs ini di hack, komputer anda akan kami sebarkan virus");
+
     let opacity = 1;
 
-    // tunggu 5 detik sebelum halaman menghilang
+    // jeda 5 detik setelah alert ditutup
     setTimeout(() => {
         const fadeOut = setInterval(() => {
-            opacity -= 0.05; // makin kecil = makin lama
+            opacity -= 0.05; // kecepatan menghilang
             document.body.style.opacity = opacity;
 
             if (opacity <= 0) {
@@ -824,9 +828,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.body.style.display = "none";
             }
         }, 500); // 0,5 detik
-    }, 5000); // 5 detik
+    }, 5000);
 });
 </script>
+
 
 </body>
 </html>
